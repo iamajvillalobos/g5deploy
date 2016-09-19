@@ -7,19 +7,23 @@ module G5deploy
     option :with_migration
     def deploy(environment)
       if environment == "production" && options[:with_migration]
-        `kubectl config use-context g5-prod && kubectl \
+        cmd = "kubectl config use-context g5-prod && kubectl \
         apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml \
-        -f k8s/db-migrate.yaml`
+        -f k8s/db-migrate.yaml"
+        run_command(cmd)
       elsif environment == "production"
-        `kubectl config use-context g5-prod && kubectl \
-        apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml`
+        cmd = "kubectl config use-context g5-prod && kubectl \
+        apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml"
+        run_command(cmd)
       elsif environment == "staging" && options[:with_migration]
-        `kubectl config use-context integrations-staging && kubectl \
+        cmd = "kubectl config use-context integrations-staging && kubectl \
         apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml \
-        -f k8s/db-migrate.yaml`
+        -f k8s/db-migrate.yaml"
+        run_command(cmd)
       elsif environment == "staging"
-        `kubectl config use-context integrations-staging && kubectl \
-        apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml`
+        cmd = "kubectl config use-context integrations-staging && kubectl \
+        apply -f k8s/sidekiq-workers.yaml -f k8s/rails-servers.yaml"
+        run_command(cmd)
       else
         puts "Command not found!".upcase
       end
@@ -28,11 +32,21 @@ module G5deploy
     desc "pods <environment>", "pods production or pods staging"
     def pods(environment)
       if environment == "production"
-        `kubectl config use-context g5-prod && kubectl get pods`
+        cmd = "kubectl config use-context g5-prod && kubectl get pods"
+        run_command(cmd)
       elsif environment == "staging"
-        `kubectl config use-context integrations-staging && kubectl get pods`
+        cmd = "kubectl config use-context integrations-staging && kubectl get pods"
+        run_command(cmd)
       else
         puts "Command not found!".upcase
+      end
+    end
+
+    private
+
+    def run_command(cmd)
+      IO.popen(cmd) do |io|
+        io.each { |s| print s }
       end
     end
 
