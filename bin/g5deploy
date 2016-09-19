@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'g5deploy'
+
+G5deploy::KubernetesHelper.start(ARGV)
