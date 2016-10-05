@@ -42,6 +42,12 @@ module G5deploy
       end
     end
 
+    desc "logs <pod_name>", "pods integrations-rails-servers-1905410877-5zfej"
+    def logs(pod_name)
+      cmd = "kubectl exec -it #{pod_name} -- /bin/bash -f"
+      run_command(cmd)
+    end
+
     private
 
     def run_command(cmd)
